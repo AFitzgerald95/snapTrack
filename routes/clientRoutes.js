@@ -19,14 +19,21 @@ console.log("GET request received at /api/clients");
 
 // Adds a new client with specified details
 router.post('/', async (req, res) => {
-  const { name, email, phone } = req.body; // Destructure the request body
+    console.log('Request Body:', req.body);
+    const { name, email, phone } = req.body; // Destructure the request body
 
-  try {
-    // Create a new client instance
-    const newClient = new Client({
-      name,
-      email,
-      phone,
+    try {
+// Check if a client with the same email already exists
+    const existingClient = await Client.findOne({email});
+    if (existingClient) {
+        return res.status(400).json({msg: 'Email already in use.'});
+}
+
+// Create a new client instance
+     const newClient = new Client({
+        name,
+        email,
+        phone,
     });
 
     const client = await newClient.save(); // Save the new client to the database
